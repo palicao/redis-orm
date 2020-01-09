@@ -2,8 +2,12 @@
 
 namespace Tystr\RedisOrm\Context;
 
+use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\TableNode;
+use DateTime;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Collections\ArrayCollection;
+use Predis\Client;
 use Tystr\RedisOrm\Criteria\AndGroupInterface;
 use Tystr\RedisOrm\Criteria\Criteria;
 use Tystr\RedisOrm\Criteria\OrGroupInterface;
@@ -18,8 +22,13 @@ use Tystr\RedisOrm\Criteria\Restrictions;
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
  */
-class MainContext extends BaseContext
+class MainContext implements SnippetAcceptingContext
 {
+    /**
+     * @var Client
+     */
+    protected $redis;
+
     /**
      * @var ObjectRepository
      */
@@ -42,7 +51,9 @@ class MainContext extends BaseContext
 
     public function __construct()
     {
-        parent::__construct();
+        AnnotationRegistry::registerAutoloadNamespace('Tystr\RedisOrm\Annotations', __DIR__.'/../../../');
+
+        $this->redis = new Client('tcp://redis:6379');
 
         $keyNamingStrategy = new ColonDelimitedKeyNamingStrategy();
         $loader = new AnnotationMetadataLoader('/tmp');
@@ -50,15 +61,31 @@ class MainContext extends BaseContext
         $this->repository = new ObjectRepository(
             $this->redis,
             $keyNamingStrategy,
-            'Tystr\RedisOrm\Test\Model\Car',
+            Car::class,
             $metadataRegistry
         );
         $this->userRepository = new ObjectRepository(
             $this->redis,
             $keyNamingStrategy,
-            'Tystr\RedisOrm\Test\Model\User',
+            User::class,
             $metadataRegistry
         );
+    }
+
+    /**
+     * @BeforeScenario
+     */
+    public function flushRedis()
+    {
+        $this->redis->flushall();
+    }
+
+    /**
+     * @Transform /^(\d+)$/
+     */
+    public function castStringToNumber($string)
+    {
+        return intval($string);
     }
 
     /**
@@ -73,7 +100,7 @@ class MainContext extends BaseContext
             $car->setEngineType($data['engine_type']);
             $car->setMake($data['make']);
             $car->setModel($data['model']);
-            $car->setManufactureDate(new \DateTime('2013-01-01'));
+            $car->setManufactureDate(new DateTime('2013-01-01'));
             if (isset($data['active'])) {
                 $car->setActive((bool)$data['active']);
             }
@@ -201,7 +228,7 @@ class MainContext extends BaseContext
     public function whenISetTheColorForTheCarTo($id, $color)
     {
         $car = $this->getObjectById($id);
-        $color = $color == 'null' ? null : $color;
+        $color = $color === 'null' ? null : $color;
         $car->setColor($color);
         $this->repository->save($car);
     }
@@ -227,7 +254,7 @@ class MainContext extends BaseContext
     public function thereShouldBeItemsInTheKey($count, $key)
     {
         $type = $this->redis->type($key);
-        if ('set' == $type) {
+        if ('set' === $type) {
             assertEquals($count, $this->redis->scard($key));
         } else {
             assertEquals($count, $this->redis->zcard($key));
@@ -252,10 +279,10 @@ class MainContext extends BaseContext
             unset($row['last_click']);
 
             $user = new User($email, $row);
-            $user->setDateOfBirth(new \DateTime($dob));
-            $user->setSignupDate(new \DateTime($signup));
-            $user->setLastOpen(new \DateTime($lastOpen));
-            $user->setLastClick(new \DateTime($lastClick));
+            $user->setDateOfBirth(new DateTime($dob));
+            $user->setSignupDate(new DateTime($signup));
+            $user->setLastOpen(new DateTime($lastOpen));
+            $user->setLastClick(new DateTime($lastClick));
             $this->userRepository->save($user);
         }
     }
@@ -302,12 +329,12 @@ class MainContext extends BaseContext
     /**
      * @param $restriction
      *
-     * @return \DateTime|string
+     * @return DateTime|string
      */
     private function translateRestrictionValue($restriction)
     {
         if (in_array($restriction['key'], array('signup', 'last_open', 'last_click', 'dob'))) {
-            $value = new \DateTime($restriction['value']);
+            $value = new DateTime($restriction['value']);
             $value = $value->format('U');
         } else {
             $value = $restriction['value'];
