@@ -30,7 +30,7 @@ class ObjectHydratorTest extends TestCase
      */
     protected $metadata;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->hydrator = new ObjectHydrator();
         $this->person = new Person('Tyler');
@@ -43,7 +43,7 @@ class ObjectHydratorTest extends TestCase
     {
         $data = array('id' => "1");
         $hydratedPerson = $this->hydrator->hydrate($this->person, $data, $this->metadata);
-        assertInternalType('integer', $hydratedPerson->id);
+        assertIsInt($hydratedPerson->id);
         assertEquals(1, $hydratedPerson->id);
     }
 
@@ -51,7 +51,7 @@ class ObjectHydratorTest extends TestCase
     {
         $data = array('address' => "123 Main St.");
         $hydratedPerson = $this->hydrator->hydrate($this->person, $data, $this->metadata);
-        assertInternalType('string', $hydratedPerson->address);
+        assertIsString($hydratedPerson->address);
         assertEquals('123 Main St.', $hydratedPerson->address);
     }
 
@@ -59,7 +59,7 @@ class ObjectHydratorTest extends TestCase
     {
         $data = array('money' => "10.95");
         $hydratedPerson = $this->hydrator->hydrate($this->person, $data, $this->metadata);
-        assertInternalType('float', $hydratedPerson->money);
+        assertIsFloat($hydratedPerson->money);
         assertEquals(10.95, $hydratedPerson->money);
     }
 
@@ -86,7 +86,7 @@ class ObjectHydratorTest extends TestCase
         $array = $this->hydrator->toArray($this->person, $this->metadata);
 
         assertArrayHasKey('address', $array);
-        assertInternalType('string', $array['address']);
+        assertIsString($array['address']);
         assertEquals('123 Main St.', $array['address']);
     }
 
@@ -96,7 +96,7 @@ class ObjectHydratorTest extends TestCase
         $array = $this->hydrator->toArray($this->person, $this->metadata);
 
         assertArrayHasKey('id', $array);
-        assertInternalType('integer', $array['id']);
+        self::assertIsInt($array['id']);
         assertEquals(10, $array['id']);
     }
 
@@ -106,7 +106,7 @@ class ObjectHydratorTest extends TestCase
         $array = $this->hydrator->toArray($this->person, $this->metadata);
 
         assertArrayHasKey('money', $array);
-        assertInternalType('float', $array['money']);
+        assertIsFloat($array['money']);
         assertEquals(9.95, $array['money']);
     }
 
@@ -116,7 +116,7 @@ class ObjectHydratorTest extends TestCase
         $array = $this->hydrator->toArray($this->person, $this->metadata);
 
         assertArrayHasKey('dob', $array);
-        assertInternalType('string', $array['dob']);
+        assertIsString($array['dob']);
         assertEquals('441763200', $array['dob']);
     }
 
@@ -126,7 +126,7 @@ class ObjectHydratorTest extends TestCase
         $array = $this->hydrator->toArray($this->person, $this->metadata);
 
         assertArrayHasKey('first_name', $array);
-        assertInternalType('string', $array['first_name']);
+        assertIsString($array['first_name']);
         assertEquals('Tyler', $array['first_name']);
     }
 }
