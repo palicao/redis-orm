@@ -2,9 +2,10 @@
 
 namespace Tystr\RedisOrm\Hydrator;
 
+use ReflectionClass;
 use ReflectionException;
-use Tystr\RedisOrm\DataTransformer\TimestampToDatetimeTransformer;
 use Tystr\RedisOrm\DataTransformer\DataTypes;
+use Tystr\RedisOrm\DataTransformer\TimestampToDatetimeTransformer;
 use Tystr\RedisOrm\Metadata\Metadata;
 
 /**
@@ -21,7 +22,7 @@ class ObjectHydrator implements ObjectHydratorInterface
      */
     public function hydrate($object, array $data, Metadata $metadata)
     {
-        $reflClass = new \ReflectionClass(get_class($object));
+        $reflClass = new ReflectionClass(get_class($object));
         foreach ($reflClass->getProperties() as $property) {
             $mapping = $metadata->getPropertyMapping($property->getName());
             if (null == $mapping) {
@@ -29,7 +30,7 @@ class ObjectHydrator implements ObjectHydratorInterface
             }
             $property->setAccessible(true);
             if (DataTypes::COLLECTION == $mapping['type']) {
-                $value = array();
+                $value = [];
                 foreach (array_keys($data) as $key) {
                     if (0 === stripos($key, $mapping['name'].':')) {
                         $value[] = $data[$key];
@@ -39,7 +40,7 @@ class ObjectHydrator implements ObjectHydratorInterface
 
                 continue;
             } elseif (DataTypes::HASH == $mapping['type']) {
-                $value = array();
+                $value = [];
                 foreach (array_keys($data) as $key) {
                     if (0 === stripos($key, $mapping['name'].':')) {
                         $newKey = substr($key, strrpos($key, ':')+1);
@@ -68,8 +69,8 @@ class ObjectHydrator implements ObjectHydratorInterface
      */
     public function toArray($object, Metadata $metadata)
     {
-        $reflClass = new \ReflectionClass(get_class($object));
-        $data = array();
+        $reflClass = new ReflectionClass(get_class($object));
+        $data = [];
         foreach ($reflClass->getProperties() as $property) {
             $mapping = $metadata->getPropertyMapping($property->getName());
             if (null === $mapping) {

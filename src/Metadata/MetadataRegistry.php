@@ -2,6 +2,7 @@
 
 namespace Tystr\RedisOrm\Metadata;
 
+use Exception;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
 /**
@@ -12,7 +13,7 @@ class MetadataRegistry
     /**
      * @var array
      */
-    protected $metadata = array();
+    protected $metadata = [];
 
     /**
      * @var LoaderInterface
@@ -30,6 +31,7 @@ class MetadataRegistry
     /**
      * @param string $class
      * @return Metadata
+     * @throws Exception
      */
     public function getMetadataFor($class)
     {

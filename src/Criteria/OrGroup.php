@@ -7,10 +7,4 @@ namespace Tystr\RedisOrm\Criteria;
  */
 class OrGroup extends Restriction implements OrGroupInterface
 {
-    /**
-     * @return Restrictions[]
-     */
-    public function getValue() {
-        return $this->value;
-    }
 }

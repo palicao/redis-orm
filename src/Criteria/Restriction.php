@@ -13,13 +13,13 @@ abstract class Restriction implements RestrictionInterface
     protected $key;
 
     /**
-     * @var string|int
+     * @var mixed
      */
     protected $value;
 
     /**
      * @param string     $key
-     * @param string|int $value
+     * @param mixed $value
      */
     public function __construct($key, $value)
     {
@@ -36,7 +36,7 @@ abstract class Restriction implements RestrictionInterface
     }
 
     /**
-     * @return int|string
+     * @return mixed
      */
     public function getValue()
     {
@@ -44,7 +44,7 @@ abstract class Restriction implements RestrictionInterface
     }
 
     /**
-     * @param string|int|bool $value
+     * @param mixed $value
      */
     public function setValue($value)
     {
@@ -52,7 +52,7 @@ abstract class Restriction implements RestrictionInterface
     }
 
     /**
-     * @param Restriction $restriction
+     * @param RestrictionInterface $restriction
      *
      * @return bool
      */

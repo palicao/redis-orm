@@ -3,6 +3,7 @@
 namespace Tystr\RedisOrm\DataTransformer;
 
 use ReflectionClass;
+use ReflectionException;
 
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
@@ -28,16 +29,13 @@ final class DataTypes
     /**
      * @param string $dataType
      * @return bool
+     * @throws ReflectionException
      */
-    static public function isValidDataType($dataType)
+    public static function isValidDataType($dataType)
     {
         $reflClass = new ReflectionClass(new static());
         $constants = $reflClass->getConstants();
 
         return in_array($dataType, $constants);
-    }
-
-    private function __construct()
-    {
     }
 }

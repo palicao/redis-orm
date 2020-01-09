@@ -43,7 +43,7 @@ class Criteria implements CriteriaInterface
     }
 
     /**
-     * @param Restriction $restriction
+     * @param RestrictionInterface $restriction
      */
     public function addRestriction(RestrictionInterface $restriction)
     {
@@ -51,7 +51,7 @@ class Criteria implements CriteriaInterface
     }
 
     /**
-     * @param Restriction $restriction
+     * @param RestrictionInterface $restriction
      */
     public function removeRestriction(RestrictionInterface $restriction)
     {
@@ -59,7 +59,7 @@ class Criteria implements CriteriaInterface
     }
 
     /**
-     * @param Restriction $expectedRestriction
+     * @param RestrictionInterface $expectedRestriction
      *
      * @return bool
      */
@@ -80,6 +80,6 @@ class Criteria implements CriteriaInterface
     public function __toString()
     {
         $keyGenerator = new RestrictionsKeyGenerator();
-        return $keyGenerator->getKeyName($this->getRestrictions());
+        return $keyGenerator->getKeyName($this->getRestrictions()->toArray());
     }
 }

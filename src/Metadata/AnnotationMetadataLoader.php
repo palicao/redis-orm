@@ -2,11 +2,13 @@
 
 namespace Tystr\RedisOrm\Metadata;
 
+use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Symfony\Component\Config\Loader\Loader;
-use Symfony\Component\Config\ConfigCache;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionProperty;
+use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\Loader\Loader;
 use Tystr\RedisOrm\Annotations\Field;
 use Tystr\RedisOrm\Annotations\Id;
 use Tystr\RedisOrm\Annotations\Index;
@@ -41,6 +43,8 @@ class AnnotationMetadataLoader extends Loader
      * @param object $resource
      * @param null $type
      * @return Metadata
+     * @throws AnnotationException
+     * @throws ReflectionException
      */
     public function load($resource, $type = null)
     {
@@ -103,7 +107,8 @@ class AnnotationMetadataLoader extends Loader
 
     /**
      * @param AnnotationReader $reader
-     * @param \ReflectionClass $reflClass
+     * @param ReflectionClass $reflClass
+     * @throws ReflectionException
      */
     protected function loadPropertyAnnotations(AnnotationReader $reader, ReflectionClass $reflClass)
     {
@@ -122,7 +127,7 @@ class AnnotationMetadataLoader extends Loader
                 } elseif ($annotation instanceof Field) {
                     $this->metadata->addPropertyMapping(
                         $property->getName(),
-                        array('type' => $annotation->type, 'name' => $annotation->name)
+                        ['type' => $annotation->type, 'name' => $annotation->name]
                     );
                 }
             }
@@ -135,12 +140,12 @@ class AnnotationMetadataLoader extends Loader
      */
     protected function validateMetadata(Metadata $metadata)
     {
-        $errors = array();
-        if (null == $metadata->getId()) {
+        $errors = [];
+        if (null === $metadata->getId()) {
             $errors[] = 'Id cannot be null.';
         }
 
-        if (null == $metadata->getPrefix()) {
+        if (null === $metadata->getPrefix()) {
             $errors[] = 'Prefix cannot be null.';
         }
 

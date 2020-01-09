@@ -3,7 +3,6 @@
 namespace Tystr\RedisOrm\Annotations;
 
 use Doctrine\Common\Annotations\Annotation;
-use Tystr\RedisOrm\Metadata\DataTypes;
 
 /**
  * @Annotation

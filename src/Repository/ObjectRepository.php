@@ -2,20 +2,26 @@
 
 namespace Tystr\RedisOrm\Repository;
 
+use DateTime;
+use Doctrine\Common\Collections\Collection;
+use Exception;
 use Predis\Client;
+use Predis\CommunicationException;
+use Predis\Response\ServerException;
+use Predis\Transaction\AbortedMultiExecException;
 use Predis\Transaction\MultiExec;
 use ReflectionClass;
-use DateTime;
-use Tystr\RedisOrm\Criteria\Criteria;
+use ReflectionException;
+use RuntimeException;
+use Tystr\RedisOrm\Criteria\AndGroupInterface;
 use Tystr\RedisOrm\Criteria\CriteriaInterface;
 use Tystr\RedisOrm\Criteria\EqualToInterface;
 use Tystr\RedisOrm\Criteria\GreaterThanInterface;
 use Tystr\RedisOrm\Criteria\GreaterThanXDaysAgoInterface;
 use Tystr\RedisOrm\Criteria\LessThanInterface;
 use Tystr\RedisOrm\Criteria\LessThanXDaysAgoInterface;
-use Tystr\RedisOrm\Criteria\AndGroupInterface;
 use Tystr\RedisOrm\Criteria\OrGroupInterface;
-use Tystr\RedisOrm\Criteria\Restrictions;
+use Tystr\RedisOrm\Criteria\RestrictionsKeyGenerator;
 use Tystr\RedisOrm\DataTransformer\DataTypes;
 use Tystr\RedisOrm\Exception\InvalidArgumentException;
 use Tystr\RedisOrm\Exception\InvalidCriteriaException;
@@ -26,8 +32,6 @@ use Tystr\RedisOrm\KeyNamingStrategy\KeyNamingStrategyInterface;
 use Tystr\RedisOrm\Metadata\Metadata;
 use Tystr\RedisOrm\Metadata\MetadataRegistry;
 use Tystr\RedisOrm\Query\ZRangeByScore;
-use Tystr\RedisOrm\Criteria\RestrictionsKeyGenerator;
-use Doctrine\Common\Collections\Collection;
 
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
@@ -73,10 +77,11 @@ class ObjectRepository
     protected $metadataRegistry;
 
     /**
-     * @param Client                     $redis
+     * @param Client $redis
      * @param KeyNamingStrategyInterface $keyNamingStrategy
-     * @param string                     $className
-     * @param ObjectHydratorInterface    $objectHydrator
+     * @param string $className
+     * @param MetadataRegistry $metadataRegistry
+     * @param ObjectHydratorInterface $objectHydrator
      */
     public function __construct(
         Client $redis,
@@ -95,6 +100,10 @@ class ObjectRepository
 
     /**
      * @param object $object
+     * @throws CommunicationException
+     * @throws ServerException
+     * @throws AbortedMultiExecException
+     * @throws ReflectionException
      */
     public function save($object)
     {
@@ -108,7 +117,7 @@ class ObjectRepository
         }
 
         $metadata = $this->getMetadataFor($this->className);
-        $key = $this->keyNamingStrategy->getKeyName(array($metadata->getPrefix(), $this->getIdForClass($object, $metadata)));
+        $key = $this->keyNamingStrategy->getKeyName([$metadata->getPrefix(), $this->getIdForClass($object, $metadata)]);
 
         $originalData = $this->redis->hgetall($key);
         $transaction = $this->redis->transaction();
@@ -128,7 +137,8 @@ class ObjectRepository
     /**
      * @param mixed $id
      *
-     * @return object
+     * @return null|object
+     * @throws ReflectionException
      */
     public function find($id)
     {
@@ -136,7 +146,7 @@ class ObjectRepository
         $key = $this->keyNamingStrategy->getKeyName(array($metadata->getPrefix(), $id));
         $data = $this->redis->hgetall($key);
         if (empty($data)) {
-            return;
+            return null;
         }
 
         return $this->hydrator->hydrate($this->newObject(), $data, $metadata);
@@ -144,21 +154,24 @@ class ObjectRepository
 
     /**
      * @param CriteriaInterface $criteria
+     * @return int
      */
     public function count(CriteriaInterface $criteria)
     {
-        return $this->findIdsBy($criteria, true);
+        $resultKey = $this->getResults($criteria->getRestrictions(), self::OP_INTERSECT);
+        return $this->redis->zcard($resultKey);
     }
 
     /**
      * @param CriteriaInterface $criteria
      *
      * @return array|object[]
+     * @throws ReflectionException
      */
     public function findBy(CriteriaInterface $criteria)
     {
         $ids = $this->findIdsBy($criteria);
-        $results = array();
+        $results = [];
         foreach ($ids as $id) {
             $results[] = $this->find($id);
         }
@@ -173,23 +186,18 @@ class ObjectRepository
      *
      * @return array
      */
-    public function findIdsBy(CriteriaInterface $criteria, $countOnly = false)
+    public function findIdsBy(CriteriaInterface $criteria)
     {
         $resultKey = $this->getResults($criteria->getRestrictions(), self::OP_INTERSECT);
-
-        if ($countOnly) {
-            return $this->redis->zcard($resultKey);
-        }
-
         return $this->redis->zrange($resultKey, 0, -1);
     }
 
     private function getResults($restrictions, $setOperation)
     {
-        $keys = array();
-        $rangeQueries = array();
+        $keys = [];
+        $rangeQueries = [];
 
-        if (count($restrictions) == 0) {
+        if (count($restrictions) === 0) {
             throw new InvalidCriteriaException('Criteria must have at least 1 restriction, found 0.');
         }
 
@@ -289,10 +297,10 @@ class ObjectRepository
      */
     protected function handleCriteria(CriteriaInterface $criteria)
     {
-        $keys = array();
-        $rangeQueries = array();
+        $keys = [];
+        $rangeQueries = [];
         $restrictions = $criteria->getRestrictions();
-        if ($restrictions->count() == 0) {
+        if (count($restrictions) === 0) {
             throw new InvalidCriteriaException('Criteria must have at least 1 restriction, found 0.');
         }
 
@@ -345,8 +353,8 @@ class ObjectRepository
             }
         }
 
-        if (count($rangeQueries) == 0) {
-            return call_user_func_array(array($this->redis, 'sinter'), array($keys));
+        if (count($rangeQueries) === 0) {
+            return call_user_func_array(array($this->redis, 'sinter'), [$keys]);
         }
 
         $tmpKey = 'redis-orm:cache:'.md5(time().$criteria->__toString());
@@ -368,11 +376,11 @@ class ObjectRepository
      * @param array  $rangeQueries
      * @param string $key
      *
-     * @return int
+     * @return array
      */
     protected function handleRangeQueries(array $rangeQueries, $key)
     {
-        $resultKeys = array();
+        $resultKeys = [];
         foreach ($rangeQueries as $rangeQuery) {
             if (!$rangeQuery instanceof ZRangeByScore) {
                 throw new \InvalidArgumentException(
@@ -383,7 +391,7 @@ class ObjectRepository
                 );
             }
             $resultKey = sprintf('%s:%s', $key, $rangeQuery->getKey());
-            $this->redis->zinterstore($resultKey, array($rangeQuery->getKey()));
+            $this->redis->zinterstore($resultKey, [$rangeQuery->getKey()]);
 
             $min = $rangeQuery->getMin();
             if ($min != '-inf') {
@@ -406,6 +414,7 @@ class ObjectRepository
      * @param string $className
      *
      * @return Metadata
+     * @throws Exception
      */
     protected function getMetadataFor($className)
     {
@@ -413,11 +422,12 @@ class ObjectRepository
     }
 
     /**
-     * @param object    $object
-     * @param Metadata  $metadata
-     * @param array     $originalData
-     * @param array     $newData
+     * @param object $object
+     * @param Metadata $metadata
+     * @param array $originalData
+     * @param array $newData
      * @param MultiExec $transaction
+     * @throws ReflectionException
      */
     protected function handleProperties($object, Metadata $metadata, array $originalData, array $newData, MultiExec $transaction)
     {
@@ -433,11 +443,12 @@ class ObjectRepository
 
     /**
      * @param ReflectionClass $reflClass
-     * @param object          $object
-     * @param string          $propertyName
-     * @param Metadata        $metadata
-     * @param array           $originalData
-     * @param MultiExec       $transaction
+     * @param object $object
+     * @param string $propertyName
+     * @param Metadata $metadata
+     * @param array $originalData
+     * @param MultiExec $transaction
+     * @throws ReflectionException
      */
     protected function handleIndex(ReflectionClass $reflClass, $object, $propertyName, $keyName, Metadata $metadata, array $originalData, $transaction)
     {
@@ -448,8 +459,8 @@ class ObjectRepository
 
         // Grab the intval here to prevent boolean false from being string cast to "" instead of "0"
         if (DataTypes::BOOLEAN === $mapping['type']) {
-            $value = intval($value);
-        } elseif (DataTypes::HASH == $mapping['type']) {
+            $value = (int)$value;
+        } elseif (DataTypes::HASH === $mapping['type']) {
             foreach ($value as $key => $val) {
                 if ((null === $val && isset($originalData[$mapping['name'].':'.$key])) ||
                     (isset($originalData[$mapping['name'].':'.$key]) &&  $originalData[$mapping['name'].':'.$key] != $val)
@@ -480,11 +491,12 @@ class ObjectRepository
 
     /**
      * @param ReflectionClass $reflClass
-     * @param object          $object
-     * @param string          $propertyName
-     * @param Metadata        $metadata
-     * @param array           $newData
-     * @param MultiExec       $transaction
+     * @param object $object
+     * @param string $propertyName
+     * @param Metadata $metadata
+     * @param array $newData
+     * @param MultiExec $transaction
+     * @throws ReflectionException
      */
     protected function handleSortedIndex(ReflectionClass $reflClass, $object, $propertyName, $keyName, Metadata $metadata, array $newData, $transaction)
     {
@@ -506,8 +518,8 @@ class ObjectRepository
     }
 
     /**
-     * @param ReflectionClass $reflClass
-     * @param Metadata        $metadata
+     * @param $object
+     * @param Metadata $metadata
      *
      * @return string|int
      */
@@ -515,7 +527,7 @@ class ObjectRepository
     {
         $getter = 'get'.ucfirst(strtolower($metadata->getId()));
         if (!method_exists($object, $getter)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf(
                     'The class "%s" must have a "%s" method for accessing the property mapped as the id field (%s)',
                     get_class($object),
@@ -530,6 +542,7 @@ class ObjectRepository
 
     /**
      * @return object
+     * @throws ReflectionException
      */
     protected function newObject()
     {

@@ -7,10 +7,4 @@ namespace Tystr\RedisOrm\Criteria;
  */
 class AndGroup extends Restriction implements AndGroupInterface
 {
-    /**
-     * @return Restrictions[]
-     */
-    public function getValue() {
-        return $this->value;
-    }
 }

@@ -87,6 +87,6 @@ class ZRangeByScore
      */
     public function toArray()
     {
-        return array($this->key, $this->min, $this->max);
+        return [$this->key, $this->min, $this->max];
     }
 }

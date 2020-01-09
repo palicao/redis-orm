@@ -8,7 +8,7 @@ namespace Tystr\RedisOrm\Criteria;
 class GreaterThan extends Restriction implements GreaterThanInterface
 {
     /**
-     * @return int|string
+     * @return int
      */
     public function getValue()
     {

@@ -2,6 +2,7 @@
 
 namespace Tystr\RedisOrm\Metadata;
 
+use ReflectionException;
 use Tystr\RedisOrm\DataTransformer\DataTypes;
 use Tystr\RedisOrm\Exception\InvalidArgumentException;
 
@@ -23,18 +24,18 @@ class Metadata
     /**
      * @var array
      */
-    protected $indexes = array();
+    protected $indexes = [];
 
     /**
      * @var array
      */
-    protected $sortedIndexes = array();
+    protected $sortedIndexes = [];
 
     /**
      * keys: name
      * @var array
      */
-    protected $propertyMappings = array();
+    protected $propertyMappings = [];
 
     /**
      * @return array
@@ -159,6 +160,7 @@ class Metadata
     /**
      * @param string $propertyName
      * @param array $mapping
+     * @throws ReflectionException
      */
     public function addPropertyMapping($propertyName, $mapping)
     {
@@ -211,7 +213,7 @@ class Metadata
      * @param array $array
      * @return Metadata
      */
-    static public function __set_state(array $array)
+    public static function __set_state(array $array)
     {
         $metadata = new static();
         $metadata->setId($array['id']);

@@ -13,11 +13,6 @@ class ColonDelimitedKeyNamingStrategy implements KeyNamingStrategyInterface
      */
     public function getKeyName(array $parts)
     {
-        $key = '';
-        foreach ($parts as $part) {
-            $key .= $part.':';
-        }
-
-        return rtrim($key, ':');
+        return rtrim(implode(':', $parts), ':');
     }
 }
