@@ -11,13 +11,13 @@ use Predis\Client;
 use Tystr\RedisOrm\Criteria\AndGroupInterface;
 use Tystr\RedisOrm\Criteria\Criteria;
 use Tystr\RedisOrm\Criteria\OrGroupInterface;
+use Tystr\RedisOrm\Criteria\Restrictions;
 use Tystr\RedisOrm\KeyNamingStrategy\ColonDelimitedKeyNamingStrategy;
 use Tystr\RedisOrm\Metadata\AnnotationMetadataLoader;
 use Tystr\RedisOrm\Metadata\MetadataRegistry;
 use Tystr\RedisOrm\Repository\ObjectRepository;
 use Tystr\RedisOrm\Tests\Integration\Model\Car;
 use Tystr\RedisOrm\Tests\Integration\Model\User;
-use Tystr\RedisOrm\Criteria\Restrictions;
 
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
@@ -51,11 +51,10 @@ class MainContext implements SnippetAcceptingContext
 
     public function __construct()
     {
-        //AnnotationRegistry::registerAutoloadNamespace('Tystr\RedisOrm\Annotations', __DIR__ . '/../../src/');
-
         AnnotationRegistry::registerLoader('class_exists');
 
-        $this->redis = new Client('tcp://redis:6379');
+        $redisHost = getenv('REDIS_HOST') ?? 'localhost';
+        $this->redis = new Client(sprintf('tcp://%s:6379', $redisHost));
 
         $keyNamingStrategy = new ColonDelimitedKeyNamingStrategy();
         $loader = new AnnotationMetadataLoader('/tmp');

@@ -6,6 +6,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
+    environment:
+      - REDIS_HOST=redis
     entrypoint: sleep infinity
     volumes:
       - .:/app
