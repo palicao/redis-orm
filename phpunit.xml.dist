@@ -4,11 +4,11 @@
          xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.1/phpunit.xsd"
          backupGlobals="false"
          colors="true"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="tests/Unit/bootstrap.php"
 >
     <testsuites>
         <testsuite name="RedisOrm Test Suite">
-            <directory>./tests</directory>
+            <directory>./tests/Unit</directory>
         </testsuite>
     </testsuites>
 

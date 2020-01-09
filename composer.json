@@ -15,9 +15,10 @@
         "behat/behat": "~3.0.6"
     },
     "autoload": {
-        "psr-4": { "Tystr\\RedisOrm\\": "src/Tystr/RedisOrm" }
+        "psr-4": { "Tystr\\RedisOrm\\": "src" }
     },
     "autoload-dev": {
+        "psr-4": { "Tystr\\RedisOrm\\Tests\\": "tests" },
         "files": [ "vendor/phpunit/phpunit/src/Framework/Assert/Functions.php" ]
     },
     "license": "MIT",
