@@ -3,7 +3,7 @@
 namespace Tystr\RedisOrm\Tests\Unit\Hydrator;
 
 use DateTime;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Tystr\RedisOrm\Hydrator\ObjectHydrator;
 use Tystr\RedisOrm\Metadata\AnnotationMetadataLoader;
 use Tystr\RedisOrm\Metadata\Metadata;
@@ -13,7 +13,7 @@ use Tystr\RedisOrm\Tests\Unit\Model\Person;
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
  */
-class ObjectHydratorTest extends PHPUnit_Framework_TestCase
+class ObjectHydratorTest extends TestCase
 {
     /**
      * @var ObjectHydrator

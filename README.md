@@ -25,11 +25,11 @@ Add to your project via composer:
 
 Setting up the Development Environment
 ======================================
-You'll need [Vagrant][2] installed and configured correctly.
+You'll need Docker[2] installed and configured correctly.
 
-Simply run the following command to get your VM up and running:
+Simply run the following command to get your containers up and running:
 
-    $ vagrant up
+    $ docker-compose up
 
 To run the [Behat][3] test suite:
 
@@ -45,5 +45,5 @@ Read The Documentation
 * **[Annotations](doc/03-annotations.md)**
 
 [1]: http://redis.io/
-[2]: http://vagrantup.com/
+[2]: https://www.docker.com/
 [3]: http://docs.behat.org/en/v3.0/

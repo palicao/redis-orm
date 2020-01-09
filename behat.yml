@@ -1,5 +1,5 @@
 default:
   suites:
     default:
-      paths:    [ %paths.base%/tests/Integration/features/ ]
-      contexts: [ Tystr\RedisOrm\Tests\Integration\Context\MainContext ]
+      paths:    [ '%paths.base%/tests/Integration/features/' ]
+      contexts: [ 'Tystr\RedisOrm\Tests\Integration\Context\MainContext' ]

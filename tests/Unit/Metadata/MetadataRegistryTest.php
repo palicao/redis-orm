@@ -2,7 +2,7 @@
 
 namespace Tystr\RedisOrm\Tests\Unit\Metadata;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Tystr\RedisOrm\Metadata\AnnotationMetadataLoader;
 use Tystr\RedisOrm\Metadata\Metadata;
 use Tystr\RedisOrm\Metadata\MetadataRegistry;
@@ -11,7 +11,7 @@ use Tystr\RedisOrm\Tests\Unit\Model\Person;
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
  */
-class MetadataRegistryTest extends PHPUnit_Framework_TestCase
+class MetadataRegistryTest extends TestCase
 {
     public function testGetMetadataForWith()
     {

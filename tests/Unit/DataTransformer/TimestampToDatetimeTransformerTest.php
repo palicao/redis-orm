@@ -3,14 +3,14 @@
 namespace Tystr\RedisOrm\Tests\Unit\DataTransformer;
 
 use DateTime;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Tystr\RedisOrm\DataTransformer\TimestampToDatetimeTransformer;
 use Tystr\RedisOrm\Exception\InvalidArgumentException;
 
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
  */
-class TimestampToDatetimeTransformerTest extends PHPUnit_Framework_TestCase
+class TimestampToDatetimeTransformerTest extends TestCase
 {
     public function testTransform()
     {
@@ -27,7 +27,7 @@ class TimestampToDatetimeTransformerTest extends PHPUnit_Framework_TestCase
     public function testReverseTransformRequiresDateTimeObject()
     {
         $transformer = new TimestampToDatetimeTransformer();
-        $this->setExpectedException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $transformer->reverseTransform(123);
     }
 }

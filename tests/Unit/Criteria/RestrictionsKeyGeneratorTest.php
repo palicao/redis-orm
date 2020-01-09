@@ -2,7 +2,7 @@
 
 namespace Tystr\RedisOrm\Tests\Unit\Criteria;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Tystr\RedisOrm\Criteria\AndGroup;
 use Tystr\RedisOrm\Criteria\EqualTo;
 use Tystr\RedisOrm\Criteria\OrGroup;
@@ -11,7 +11,7 @@ use Tystr\RedisOrm\Criteria\RestrictionsKeyGenerator;
 /**
  * @author Justin Taft <justin.t@zeetogroup.com>
  */
-class RestrictionsKeyGeneratorTest extends PHPUnit_Framework_TestCase
+class RestrictionsKeyGeneratorTest extends TestCase
 {
     /**
      * @param $restrictions

@@ -2,25 +2,25 @@
 
 namespace Tystr\RedisOrm\Tests\Unit\Metadata;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Tystr\RedisOrm\Metadata\Metadata;
 
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
  */
-class MetadataTest extends PHPUnit_Framework_TestCase
+class MetadataTest extends TestCase
 {
     public function testAddPropertyMappingWithInvalidMappingThrowsException()
     {
         $metadata = new Metadata();
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         $metadata->addPropertyMapping('someProperty', null);
     }
 
     public function testAddPropertyMappingWithInvalidDataTypeThrowsException()
     {
         $metadata = new Metadata();
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         $metadata->addPropertyMapping('someProperty', array('name' => 'some_property', 'type' => 'INVALID TYPE'));
     }
 
