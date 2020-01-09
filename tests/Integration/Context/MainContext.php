@@ -53,7 +53,7 @@ class MainContext implements SnippetAcceptingContext
     {
         AnnotationRegistry::registerLoader('class_exists');
 
-        $redisHost = getenv('REDIS_HOST') ?? 'localhost';
+        $redisHost = getenv('REDIS_HOST') ?: 'localhost';
         $this->redis = new Client(sprintf('tcp://%s:6379', $redisHost));
 
         $keyNamingStrategy = new ColonDelimitedKeyNamingStrategy();
