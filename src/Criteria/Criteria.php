@@ -27,9 +27,9 @@ class Criteria implements CriteriaInterface
     }
 
     /**
-     * @return Collection
+     * @return array|Collection|Restriction[]
      */
-    public function getRestrictions()
+    public function getRestrictions(): array
     {
         return $this->restrictions;
     }
@@ -37,7 +37,7 @@ class Criteria implements CriteriaInterface
     /**
      * @param Collection $restrictions
      */
-    public function setRestrictions(Collection $restrictions)
+    public function setRestrictions(Collection $restrictions): void
     {
         $this->restrictions = $restrictions;
     }
@@ -45,7 +45,7 @@ class Criteria implements CriteriaInterface
     /**
      * @param RestrictionInterface $restriction
      */
-    public function addRestriction(RestrictionInterface $restriction)
+    public function addRestriction(RestrictionInterface $restriction): void
     {
         $this->restrictions->add($restriction);
     }
@@ -53,7 +53,7 @@ class Criteria implements CriteriaInterface
     /**
      * @param RestrictionInterface $restriction
      */
-    public function removeRestriction(RestrictionInterface $restriction)
+    public function removeRestriction(RestrictionInterface $restriction): void
     {
         $this->restrictions->removeElement($restriction);
     }
@@ -63,7 +63,7 @@ class Criteria implements CriteriaInterface
      *
      * @return bool
      */
-    public function hasRestriction(RestrictionInterface $expectedRestriction)
+    public function hasRestriction(RestrictionInterface $expectedRestriction): bool
     {
         foreach ($this->restrictions as $restriction) {
             if ($restriction->equals($expectedRestriction)) {
@@ -77,7 +77,7 @@ class Criteria implements CriteriaInterface
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $keyGenerator = new RestrictionsKeyGenerator();
         return $keyGenerator->getKeyName($this->getRestrictions()->toArray());

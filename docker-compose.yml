@@ -1,16 +1,16 @@
 version: '3'
 
 services:
-  php:
-    container_name: php
+  redis-orm-php:
+    container_name: redis-orm-php
     build:
       dockerfile: Dockerfile
       context: .
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=redis-orm-redis
     entrypoint: sleep infinity
     volumes:
       - .:/app
-  redis:
-    container_name: redis
+  redis-orm-redis:
+    container_name: redis-orm-redis
     image: redis:5.0.7

@@ -34,7 +34,7 @@ class AnnotationMetadataLoader extends Loader
     /**
      * @param string $cacheDir
      */
-    public function __construct($cacheDir)
+    public function __construct(string $cacheDir)
     {
         $this->cacheDir = $cacheDir;
     }

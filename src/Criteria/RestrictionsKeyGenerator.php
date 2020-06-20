@@ -2,32 +2,25 @@
 
 namespace Tystr\RedisOrm\Criteria;
 
-use Traversable;
-
 /**
  * @author Justin Taft <justin.t@zeetogroup.com>
  */
 class RestrictionsKeyGenerator
 {
     /**
-     * @param array $parts
+     * @param array $restrictions
      *
      * @return string
      */
-    public function getKeyName(array $parts)
-    {
-        return $this->_createKeyStringForRestriction($parts);
-    }
-
-    private function _createKeyStringForRestriction($restrictions)
+    public function getKeyName(array $restrictions): string
     {
         $string = '';
         foreach ($restrictions as $restriction) {
             $value = $restriction->getValue();
             $finalValue = '';
 
-            if (is_array($value) || $value instanceof Traversable) {
-                $finalValue .= '('.$this->_createKeyStringForRestriction($value).')';
+            if (is_iterable($value)) {
+                $finalValue .= '('.$this->getKeyName($value).')';
             } else {
                 $finalValue = $restriction->getValue();
             }

@@ -10,5 +10,5 @@ interface OrGroupInterface
     /**
      * @return Restrictions[]
      */
-    public function getValue();
+    public function getValue(): array ;
 }

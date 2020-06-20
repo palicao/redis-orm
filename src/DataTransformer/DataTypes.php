@@ -10,21 +10,21 @@ use ReflectionException;
  */
 final class DataTypes
 {
-    const DATE = 'date';
-    const STRING = 'string';
-    const INTEGER = 'integer';
-    const DOUBLE = 'double';
-    const BOOLEAN = 'boolean';
+    public const DATE = 'date';
+    public const STRING = 'string';
+    public const INTEGER = 'integer';
+    public const DOUBLE = 'double';
+    public const BOOLEAN = 'boolean';
 
     /**
      * Denotes a numeric indexed array
      */
-    const COLLECTION = 'collection';
+    public const COLLECTION = 'collection';
 
     /**
      * Denotes an associative array
      */
-    const HASH = 'hash';
+    public const HASH = 'hash';
 
     /**
      * @param string $dataType

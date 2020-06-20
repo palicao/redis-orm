@@ -27,7 +27,7 @@ class ZRangeByScore
      * @param string $min
      * @param string $max
      */
-    public function __construct($key, $min = '-inf', $max = '+inf')
+    public function __construct(string $key, $min = '-inf', $max = '+inf')
     {
         $this->key = $key;
         $this->min = $min;
@@ -37,7 +37,7 @@ class ZRangeByScore
     /**
      * @return string
      */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
@@ -45,7 +45,7 @@ class ZRangeByScore
     /**
      * @param string $key
      */
-    public function setKey($key)
+    public function setKey(string $key): void
     {
         $this->key = $key;
     }
@@ -61,7 +61,7 @@ class ZRangeByScore
     /**
      * @param int|string $max
      */
-    public function setMax($max)
+    public function setMax($max): void
     {
         $this->max = $max;
     }
@@ -77,7 +77,7 @@ class ZRangeByScore
     /**
      * @param int|string $min
      */
-    public function setMin($min)
+    public function setMin($min): void
     {
         $this->min = $min;
     }
@@ -85,7 +85,7 @@ class ZRangeByScore
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [$this->key, $this->min, $this->max];
     }

@@ -29,7 +29,7 @@ class ObjectHydrator implements ObjectHydratorInterface
                 continue;
             }
             $property->setAccessible(true);
-            if (DataTypes::COLLECTION == $mapping['type']) {
+            if (DataTypes::COLLECTION === $mapping['type']) {
                 $value = [];
                 foreach (array_keys($data) as $key) {
                     if (0 === stripos($key, $mapping['name'].':')) {
@@ -39,7 +39,9 @@ class ObjectHydrator implements ObjectHydratorInterface
                 $property->setValue($object, $value);
 
                 continue;
-            } elseif (DataTypes::HASH == $mapping['type']) {
+            }
+
+            if (DataTypes::HASH === $mapping['type']) {
                 $value = [];
                 foreach (array_keys($data) as $key) {
                     if (0 === stripos($key, $mapping['name'].':')) {
@@ -67,7 +69,7 @@ class ObjectHydrator implements ObjectHydratorInterface
      * @return array
      * @throws ReflectionException
      */
-    public function toArray($object, Metadata $metadata)
+    public function toArray($object, Metadata $metadata): array
     {
         $reflClass = new ReflectionClass(get_class($object));
         $data = [];

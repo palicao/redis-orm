@@ -1,6 +1,6 @@
 <?php
 
-namespace Tystr\RedisOrm\Repository;
+namespace Tystr\RedisOrm;
 
 use DateTime;
 use Doctrine\Common\Collections\Collection;
@@ -23,7 +23,6 @@ use Tystr\RedisOrm\Criteria\LessThanXDaysAgoInterface;
 use Tystr\RedisOrm\Criteria\OrGroupInterface;
 use Tystr\RedisOrm\Criteria\RestrictionsKeyGenerator;
 use Tystr\RedisOrm\DataTransformer\DataTypes;
-use Tystr\RedisOrm\Exception\InvalidArgumentException;
 use Tystr\RedisOrm\Exception\InvalidCriteriaException;
 use Tystr\RedisOrm\Exception\InvalidRestrictionValue;
 use Tystr\RedisOrm\Hydrator\ObjectHydrator;
@@ -36,45 +35,45 @@ use Tystr\RedisOrm\Query\ZRangeByScore;
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
  */
-class ObjectRepository
+class Repository
 {
-    const OP_UNION = 0;
-    const OP_INTERSECT = 1;
+    private const OP_UNION = 0;
+    private const OP_INTERSECT = 1;
 
     /**
      * @var string
      */
-    protected $className;
+    private $className;
 
     /**
      * @var Client
      */
-    protected $redis;
+    private $redis;
 
     /**
      * @var KeyNamingStrategyInterface
      */
-    protected $keyNamingStrategy;
+    private $keyNamingStrategy;
 
     /**
      * @var RestrictionsKeyGenerator
      */
-    protected $restrictionsKeyGenerator;
+    private $restrictionsKeyGenerator;
 
     /**
      * @var string
      */
-    protected $prefix;
+    private $prefix;
 
     /**
      * @var ObjectHydratorInterface
      */
-    protected $hydrator;
+    private $hydrator;
 
     /**
      * @var MetadataRegistry
      */
-    protected $metadataRegistry;
+    private $metadataRegistry;
 
     /**
      * @param Client $redis
@@ -104,18 +103,10 @@ class ObjectRepository
      * @throws ServerException
      * @throws AbortedMultiExecException
      * @throws ReflectionException
+     * @throws Exception
      */
-    public function save($object)
+    public function save(object $object): void
     {
-        if (!is_object($object)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'You must pass an object to Tystr\RedisOrm\Repository\PredisRepository::save(), %s given.',
-                    gettype($object)
-                )
-            );
-        }
-
         $metadata = $this->getMetadataFor($this->className);
         $key = $this->keyNamingStrategy->getKeyName([$metadata->getPrefix(), $this->getIdForClass($object, $metadata)]);
 
@@ -139,8 +130,9 @@ class ObjectRepository
      *
      * @return null|object
      * @throws ReflectionException
+     * @throws Exception
      */
-    public function find($id)
+    public function find($id): ?object
     {
         $metadata = $this->getMetadataFor($this->className);
         $key = $this->keyNamingStrategy->getKeyName(array($metadata->getPrefix(), $id));
@@ -156,7 +148,7 @@ class ObjectRepository
      * @param CriteriaInterface $criteria
      * @return int
      */
-    public function count(CriteriaInterface $criteria)
+    public function count(CriteriaInterface $criteria): int
     {
         $resultKey = $this->getResults($criteria->getRestrictions(), self::OP_INTERSECT);
         return $this->redis->zcard($resultKey);
@@ -168,7 +160,7 @@ class ObjectRepository
      * @return array|object[]
      * @throws ReflectionException
      */
-    public function findBy(CriteriaInterface $criteria)
+    public function findBy(CriteriaInterface $criteria): array
     {
         $ids = $this->findIdsBy($criteria);
         $results = [];
@@ -186,7 +178,7 @@ class ObjectRepository
      *
      * @return array
      */
-    public function findIdsBy(CriteriaInterface $criteria)
+    public function findIdsBy(CriteriaInterface $criteria): array
     {
         $resultKey = $this->getResults($criteria->getRestrictions(), self::OP_INTERSECT);
         return $this->redis->zrange($resultKey, 0, -1);
@@ -295,7 +287,7 @@ class ObjectRepository
      *
      * @return string
      */
-    protected function handleCriteria(CriteriaInterface $criteria)
+    private function handleCriteria(CriteriaInterface $criteria)
     {
         $keys = [];
         $rangeQueries = [];
@@ -378,7 +370,7 @@ class ObjectRepository
      *
      * @return array
      */
-    protected function handleRangeQueries(array $rangeQueries, $key)
+    private function handleRangeQueries(array $rangeQueries, $key): array
     {
         $resultKeys = [];
         foreach ($rangeQueries as $rangeQuery) {
@@ -416,7 +408,7 @@ class ObjectRepository
      * @return Metadata
      * @throws Exception
      */
-    protected function getMetadataFor($className)
+    private function getMetadataFor($className): Metadata
     {
         return $this->metadataRegistry->getMetadataFor($className);
     }
@@ -429,7 +421,7 @@ class ObjectRepository
      * @param MultiExec $transaction
      * @throws ReflectionException
      */
-    protected function handleProperties($object, Metadata $metadata, array $originalData, array $newData, MultiExec $transaction)
+    private function handleProperties($object, Metadata $metadata, array $originalData, array $newData, MultiExec $transaction): void
     {
         $reflClass = new ReflectionClass($object);
         foreach ($metadata->getIndexes() as $propertyName => $keyName) {
@@ -450,7 +442,7 @@ class ObjectRepository
      * @param MultiExec $transaction
      * @throws ReflectionException
      */
-    protected function handleIndex(ReflectionClass $reflClass, $object, $propertyName, $keyName, Metadata $metadata, array $originalData, $transaction)
+    private function handleIndex(ReflectionClass $reflClass, $object, $propertyName, $keyName, Metadata $metadata, array $originalData, $transaction): void
     {
         $property = $reflClass->getProperty($propertyName);
         $property->setAccessible(true);
@@ -498,7 +490,7 @@ class ObjectRepository
      * @param MultiExec $transaction
      * @throws ReflectionException
      */
-    protected function handleSortedIndex(ReflectionClass $reflClass, $object, $propertyName, $keyName, Metadata $metadata, array $newData, $transaction)
+    private function handleSortedIndex(ReflectionClass $reflClass, $object, $propertyName, $keyName, Metadata $metadata, array $newData, $transaction): void
     {
         $property = $reflClass->getProperty($propertyName);
         $property->setAccessible(true);
@@ -523,7 +515,7 @@ class ObjectRepository
      *
      * @return string|int
      */
-    protected function getIdForClass($object, Metadata $metadata)
+    private function getIdForClass($object, Metadata $metadata)
     {
         $getter = 'get'.ucfirst(strtolower($metadata->getId()));
         if (!method_exists($object, $getter)) {
@@ -544,7 +536,7 @@ class ObjectRepository
      * @return object
      * @throws ReflectionException
      */
-    protected function newObject()
+    private function newObject()
     {
         if (version_compare(PHP_VERSION, '5.4') >= 0) {
             $reflClass = new ReflectionClass($this->className);

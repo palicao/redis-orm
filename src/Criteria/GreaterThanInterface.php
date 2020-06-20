@@ -10,5 +10,5 @@ interface GreaterThanInterface
     /**
      * @return int
      */
-    public function getValue();
+    public function getValue(): int;
 }

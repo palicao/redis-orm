@@ -15,7 +15,7 @@ use Tystr\RedisOrm\Criteria\Restrictions;
 use Tystr\RedisOrm\KeyNamingStrategy\ColonDelimitedKeyNamingStrategy;
 use Tystr\RedisOrm\Metadata\AnnotationMetadataLoader;
 use Tystr\RedisOrm\Metadata\MetadataRegistry;
-use Tystr\RedisOrm\Repository\ObjectRepository;
+use Tystr\RedisOrm\Repository;
 use Tystr\RedisOrm\Tests\Integration\Model\Car;
 use Tystr\RedisOrm\Tests\Integration\Model\User;
 
@@ -30,12 +30,12 @@ class MainContext implements SnippetAcceptingContext
     protected $redis;
 
     /**
-     * @var ObjectRepository
+     * @var Repository
      */
     protected $repository;
 
     /**
-     * @var ObjectRepository
+     * @var Repository
      */
     protected $userRepository;
 
@@ -59,13 +59,13 @@ class MainContext implements SnippetAcceptingContext
         $keyNamingStrategy = new ColonDelimitedKeyNamingStrategy();
         $loader = new AnnotationMetadataLoader('/tmp');
         $metadataRegistry = new MetadataRegistry($loader);
-        $this->repository = new ObjectRepository(
+        $this->repository = new Repository(
             $this->redis,
             $keyNamingStrategy,
             Car::class,
             $metadataRegistry
         );
-        $this->userRepository = new ObjectRepository(
+        $this->userRepository = new Repository(
             $this->redis,
             $keyNamingStrategy,
             User::class,

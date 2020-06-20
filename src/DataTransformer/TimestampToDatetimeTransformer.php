@@ -2,8 +2,8 @@
 
 namespace Tystr\RedisOrm\DataTransformer;
 
-use DateTime;
-use Tystr\RedisOrm\Exception\InvalidArgumentException;
+use DateTimeImmutable;
+use DateTimeInterface;
 
 /**
  * @author Tyler Stroud <tyler@tylerstroud.com>
@@ -12,28 +12,19 @@ class TimestampToDatetimeTransformer
 {
     /**
      * @param mixed $value
-     * @return string
+     * @return DateTimeInterface
      */
-    public function transform($value)
+    public function transform($value): DateTimeInterface
     {
-        return DateTime::createFromFormat('U', $value);
+        return DateTimeImmutable::createFromFormat('U', $value);
     }
 
     /**
-     * @param mixed $value
-     * @return mixed|string
+     * @param DateTimeInterface $value
+     * @return int
      */
-    public function reverseTransform($value)
+    public function reverseTransform(DateTimeInterface $value): int
     {
-        if (!$value instanceof DateTime) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'The value must be an instance of \DateTime, "%s given.',
-                    gettype($value)
-                )
-            );
-        }
-
-        return $value->format('U');
+        return (int) $value->format('U');
     }
 }

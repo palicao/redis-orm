@@ -10,7 +10,7 @@ class GreaterThan extends Restriction implements GreaterThanInterface
     /**
      * @return int
      */
-    public function getValue()
+    public function getValue(): int
     {
         return (int) $this->value;
     }

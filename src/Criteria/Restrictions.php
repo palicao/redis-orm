@@ -13,9 +13,9 @@ class Restrictions
      *
      * @return GreaterThan
      */
-    public static function greaterThan($key, $value)
+    public static function greaterThan(string $key, int $value): GreaterThanInterface
     {
-        return new GreaterThan($key, (int) $value);
+        return new GreaterThan($key, $value);
     }
 
     /**
@@ -24,9 +24,9 @@ class Restrictions
      *
      * @return LessThan
      */
-    public static function lessThan($key, $value)
+    public static function lessThan(string $key, int $value): LessThanInterface
     {
-        return new LessThan($key, (int) $value);
+        return new LessThan($key, $value);
     }
 
     /**
@@ -35,7 +35,7 @@ class Restrictions
      *
      * @return EqualTo
      */
-    public static function equalTo($key, $value)
+    public static function equalTo(string $key, int $value): EqualToInterface
     {
         return new EqualTo($key, $value);
     }
@@ -46,7 +46,7 @@ class Restrictions
      *
      * @return AndGroup
      */
-    public static function andGroup($key, $value)
+    public static function andGroup(string $key, array $value): AndGroupInterface
     {
         return new AndGroup($key, $value);
     }
@@ -57,7 +57,7 @@ class Restrictions
      *
      * @return OrGroup
      */
-    public static function orGroup($key, $value)
+    public static function orGroup(string $key, array $value): OrGroupInterface
     {
         return new OrGroup($key, $value);
     }

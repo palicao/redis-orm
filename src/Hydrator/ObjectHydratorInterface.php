@@ -21,5 +21,5 @@ interface ObjectHydratorInterface
      * @param Metadata $metadata
      * @return array
      */
-    public function toArray($object, Metadata $metadata);
+    public function toArray($object, Metadata $metadata): array;
 }

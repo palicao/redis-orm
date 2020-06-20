@@ -33,7 +33,7 @@ class MetadataRegistry
      * @return Metadata
      * @throws Exception
      */
-    public function getMetadataFor($class)
+    public function getMetadataFor($class): Metadata
     {
         if (!array_key_exists($class, $this->metadata)) {
             $this->metadata[$class] = $this->loader->load($class);

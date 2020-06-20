@@ -40,7 +40,7 @@ class Metadata
     /**
      * @return array
      */
-    public function getIndexes()
+    public function getIndexes(): array
     {
         return $this->indexes;
     }
@@ -48,7 +48,7 @@ class Metadata
     /**
      * @param array $indexes
      */
-    public function setIndexes($indexes)
+    public function setIndexes(array $indexes): void
     {
         $this->indexes = $indexes;
     }
@@ -57,7 +57,7 @@ class Metadata
      * @param string $property
      * @param string $index
      */
-    public function addIndex($property, $index)
+    public function addIndex(string $property, string $index): void
     {
         $this->indexes[$property] = $index;
     }
@@ -66,7 +66,7 @@ class Metadata
      * @param string $name
      * @return bool
      */
-    public function hasIndex($name)
+    public function hasIndex($name): bool
     {
         return isset($this->indexes[$name]);
     }
@@ -74,7 +74,7 @@ class Metadata
     /**
      * @return string
      */
-    public function getPrefix()
+    public function getPrefix(): string
     {
         return $this->prefix;
     }
@@ -82,7 +82,7 @@ class Metadata
     /**
      * @param string $prefix
      */
-    public function setPrefix($prefix)
+    public function setPrefix(string $prefix): void
     {
         $this->prefix = $prefix;
     }
@@ -90,7 +90,7 @@ class Metadata
     /**
      * @return array
      */
-    public function getSortedIndexes()
+    public function getSortedIndexes(): array
     {
         return $this->sortedIndexes;
     }
@@ -98,7 +98,7 @@ class Metadata
     /**
      * @param array $sortedIndexes
      */
-    public function setSortedIndexes($sortedIndexes)
+    public function setSortedIndexes(array $sortedIndexes): void
     {
         $this->sortedIndexes = $sortedIndexes;
     }
@@ -107,7 +107,7 @@ class Metadata
      * @param string $propertyName
      * @param string $sortedIndex
      */
-    public function addSortedIndex($propertyName, $sortedIndex)
+    public function addSortedIndex(string $propertyName, string $sortedIndex)
     {
         $this->sortedIndexes[$propertyName] = $sortedIndex;
     }
@@ -116,7 +116,7 @@ class Metadata
      * @param string $propertyName
      * @return string|null
      */
-    public function getSortedIndex($propertyName)
+    public function getSortedIndex($propertyName): ?string
     {
         if (isset($this->sortedIndexes[$propertyName])) {
             return $this->sortedIndexes[$propertyName];
@@ -128,7 +128,7 @@ class Metadata
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -136,7 +136,7 @@ class Metadata
     /**
      * @param string $id
      */
-    public function setId($id)
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
@@ -144,7 +144,7 @@ class Metadata
     /**
      * @return array
      */
-    public function getPropertyMappings()
+    public function getPropertyMappings(): array
     {
         return $this->propertyMappings;
     }
@@ -152,7 +152,7 @@ class Metadata
     /**
      * @param array $propertyMappings
      */
-    public function setPropertyMappings(array $propertyMappings)
+    public function setPropertyMappings(array $propertyMappings): void
     {
         $this->propertyMappings = $propertyMappings;
     }
@@ -162,7 +162,7 @@ class Metadata
      * @param array $mapping
      * @throws ReflectionException
      */
-    public function addPropertyMapping($propertyName, $mapping)
+    public function addPropertyMapping(string $propertyName, array $mapping): void
     {
         if (!isset($mapping['type'])) {
             throw new InvalidArgumentException(sprintf('Invalid @Field mapping for property "%s".', $propertyName));
@@ -196,9 +196,9 @@ class Metadata
 
     /**
      * @param string $mappedName
-     * @return string
+     * @return null|string
      */
-    public function getMappingForMappedName($mappedName)
+    public function getMappingForMappedName(string $mappedName)
     {
         foreach ($this->propertyMappings as $propertyName => $mapping) {
             if ($mappedName === $mapping['name']) {
@@ -207,6 +207,7 @@ class Metadata
                 return $mapping;
             }
         }
+        return null;
     }
 
     /**

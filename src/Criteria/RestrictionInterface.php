@@ -10,7 +10,7 @@ interface RestrictionInterface
     /**
      * @return string
      */
-    public function getKey();
+    public function getKey(): string;
 
     /**
      * @return mixed
@@ -20,11 +20,11 @@ interface RestrictionInterface
     /**
      * @param mixed $value
      */
-    public function setValue($value);
+    public function setValue($value): void;
 
     /**
      * @param RestrictionInterface $restriction
      * @return bool
      */
-    public function equals(RestrictionInterface $restriction);
+    public function equals(RestrictionInterface $restriction): bool;
 }

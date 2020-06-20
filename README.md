@@ -1,6 +1,7 @@
 Redis ORM
 =========
-[![Build Status](https://travis-ci.org/tystr/redis-orm.svg?branch=master)](https://travis-ci.org/tystr/redis-orm)
+[![Build Status](https://travis-ci.com/palicao/redis-orm.svg?branch=master)](https://travis-ci.com/palicao/redis-orm)
+[![GitHub](https://img.shields.io/github/license/palicao/redis-orm)](https://github.com/palicao/redis-orm/blob/master/LICENSE)
 
 This is a small object mapper library designed to assist in storing objects into a [Redis][1] database
 while maintaining indexes for the fields of the object for efficient querying and filtering.
@@ -25,17 +26,16 @@ Add to your project via composer:
 
 Setting up the Development Environment
 ======================================
-You'll need Docker[2] installed and configured correctly.
+You'll need [Docker][2] installed and configured correctly.
 
 Simply run the following command to get your containers up and running:
 
-    $ docker-compose up
+    $ docker-compose up -d
 
-To run the [Behat][3] test suite:
+To run the [Behat][3] and [PHPUnit][4] test suites:
 
-    $ vagrant ssh
-    $ cd /vagrant
-    $ vendor/bin/behat
+    $ docker-compose exec redis-orm-php vendor/bin/behat
+    $ docker-compose exec redis-orm-php vendor/bin/phpunit
 
 Read The Documentation
 ======================
@@ -47,3 +47,4 @@ Read The Documentation
 [1]: http://redis.io/
 [2]: https://www.docker.com/
 [3]: http://docs.behat.org/en/v3.0/
+[4]: https://phpunit.de/

@@ -10,33 +10,33 @@ use Doctrine\Common\Collections\Collection;
 interface CriteriaInterface
 {
     /**
-     * @return array|Restriction[]
+     * @return array|Collection|Restriction[]
      */
-    public function getRestrictions();
+    public function getRestrictions(): array;
 
     /**
      * @param Collection $restrictions
      */
-    public function setRestrictions(Collection $restrictions);
+    public function setRestrictions(Collection $restrictions): void;
 
     /**
-     * @param Restriction $restriction
+     * @param RestrictionInterface $restriction
      */
-    public function addRestriction(RestrictionInterface $restriction);
+    public function addRestriction(RestrictionInterface $restriction): void;
 
     /**
-     * @param Restriction $restriction
+     * @param RestrictionInterface $restriction
      */
-    public function removeRestriction(RestrictionInterface $restriction);
+    public function removeRestriction(RestrictionInterface $restriction): void;
 
     /**
-     * @param Restriction $restriction
+     * @param RestrictionInterface $restriction
      * @return bool
      */
-    public function hasRestriction(RestrictionInterface $restriction);
+    public function hasRestriction(RestrictionInterface $restriction): bool;
 
     /**
      * @return string
      */
-    public function __toString();
+    public function __toString(): string;
 }

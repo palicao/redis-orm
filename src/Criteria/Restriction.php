@@ -30,7 +30,7 @@ abstract class Restriction implements RestrictionInterface
     /**
      * @return string
      */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
@@ -46,7 +46,7 @@ abstract class Restriction implements RestrictionInterface
     /**
      * @param mixed $value
      */
-    public function setValue($value)
+    public function setValue($value): void
     {
         $this->value = $value;
     }
@@ -56,7 +56,7 @@ abstract class Restriction implements RestrictionInterface
      *
      * @return bool
      */
-    public function equals(RestrictionInterface $restriction)
+    public function equals(RestrictionInterface $restriction): bool
     {
         return get_class($restriction) === get_class($this) &&
             $restriction->getKey() === $this->getKey() &&
